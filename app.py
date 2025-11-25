@@ -175,9 +175,9 @@ def register_parent():
 @app.route("/register/admin", methods=["GET", "POST"])
 def register_admin():
     if request.method == "POST":
-        key = request.form.get("key")
+        key = request.form.get("admin_passkey")
         if key != "CHILDGROWTH-ADMIN-2025":
-            flash("Invalid admin key.", "danger")
+            flash("Invalid admin passkey.", "danger")
             return redirect(url_for("register_admin"))
 
         name = request.form["name"]
