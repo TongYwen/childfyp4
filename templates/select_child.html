@@ -5,6 +5,7 @@
   <div class="auth-box">
     <h2 class="mb-4 text-center">Select Your Child</h2>
 
+    {% if children %}
     <form method="POST">
       <div class="mb-3">
         <label for="childSelect" class="form-label">Choose Child</label>
@@ -20,6 +21,12 @@
         <button type="submit" class="btn btn-primary px-4">Continue</button>
       </div>
     </form>
+    {% else %}
+    <div class="text-center">
+      <p class="text-muted mb-3">You don't have any child profiles yet.</p>
+      <a href="{{ url_for('profile') }}" class="btn btn-primary px-4">Add Your First Child</a>
+    </div>
+    {% endif %}
   </div>
 </div>
 
