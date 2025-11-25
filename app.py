@@ -34,7 +34,6 @@ mail = Mail(app)
 serializer = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 EMAIL_REGEX = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
-ADMIN_PASSKEY = "child1234"
 
 # -------------- GEMINI + BENCHMARK SETUP --------------
 genai.configure(api_key=app.config["GOOGLE_API_KEY"])
@@ -176,7 +175,7 @@ def register_parent():
 def register_admin():
     if request.method == "POST":
         key = request.form.get("admin_passkey")
-        if key != "CHILDGROWTH-ADMIN-2025":
+        if key != app.config["ADMIN_PASSKEY"]:
             flash("Invalid admin passkey.", "danger")
             return redirect(url_for("register_admin"))
 
