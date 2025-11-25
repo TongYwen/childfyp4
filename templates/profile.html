@@ -50,11 +50,13 @@
       <!-- Children Tab -->
       <div class="tab-pane fade show active" id="childrenTab" role="tabpanel">
         <div class="d-flex justify-content-between mb-3">
-          <input type="text" id="childSearch" class="form-control form-control-sm" 
+          <input type="text" id="childSearch" class="form-control form-control-sm"
                  placeholder="Search child..." style="width:200px;">
+          {% if user.role != 'admin' %}
           <button class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addChildModal">
             + Add Child
           </button>
+          {% endif %}
         </div>
 
         {% if children %}
@@ -208,6 +210,7 @@
 </div>
 
 <!-- Add Child Modal -->
+{% if user.role != 'admin' %}
 <div class="modal fade" id="addChildModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -258,6 +261,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 
 
