@@ -95,6 +95,14 @@ def is_strong_password(password: str) -> bool:
     return re.search(pattern, password) is not None
 
 
+def is_valid_email(email: str) -> bool:
+    """Validate email format using EMAIL_REGEX pattern."""
+    if not email or len(email) > 254:  # RFC 5321 max length
+        return False
+    email = email.strip()
+    return EMAIL_REGEX.match(email) is not None
+
+
 def normalize_role(role):
     if not role:
         return None
@@ -148,13 +156,28 @@ def register_select():
 def register_parent():
     if request.method == "POST":
         name = request.form["name"]
-        email = request.form["email"]
+        email = request.form["email"].strip().lower()
         password = request.form["password"]
+
+        # Validate email format
+        if not is_valid_email(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("register_parent"))
+
+        # Check if email already exists
+        conn = get_db_conn()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            cursor.close()
+            conn.close()
+            flash("An account with this email already exists.", "danger")
+            return redirect(url_for("register_parent"))
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
-        conn = get_db_conn()
-        cursor = conn.cursor()
         cursor.execute(
             """
             INSERT INTO users (name, email, password, role)
@@ -181,13 +204,28 @@ def register_admin():
             return redirect(url_for("register_admin"))
 
         name = request.form["name"]
-        email = request.form["email"]
+        email = request.form["email"].strip().lower()
         password = request.form["password"]
+
+        # Validate email format
+        if not is_valid_email(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("register_admin"))
+
+        # Check if email already exists
+        conn = get_db_conn()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            cursor.close()
+            conn.close()
+            flash("An account with this email already exists.", "danger")
+            return redirect(url_for("register_admin"))
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
-        conn = get_db_conn()
-        cursor = conn.cursor()
         cursor.execute(
             """
             INSERT INTO users (name, email, password, role)
@@ -210,6 +248,11 @@ def login():
     if request.method == "POST":
         email = request.form["email"].strip().lower()
         password = request.form["password"]
+
+        # Validate email format
+        if not is_valid_email(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("login"))
 
         conn = get_db_conn()
         cursor = conn.cursor(dictionary=True)
@@ -304,6 +347,12 @@ If you didn't request this, you can safely ignore this email.
 def forgot():
     if request.method == "POST":
         email = request.form["email"].strip().lower()
+
+        # Validate email format
+        if not is_valid_email(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("forgot"))
+
         conn = get_db_conn()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
@@ -524,8 +573,27 @@ def edit_profile():
     name = request.form["name"].strip()
     email = request.form["email"].strip().lower()
 
+    # Validate email format
+    if not is_valid_email(email):
+        flash("Please enter a valid email address.", "danger")
+        return redirect(url_for("profile"))
+
     conn = get_db_conn()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
+
+    # Check if email already exists for a different user
+    cursor.execute(
+        "SELECT id FROM users WHERE email = %s AND id != %s",
+        (email, current_user.id)
+    )
+    existing_user = cursor.fetchone()
+
+    if existing_user:
+        cursor.close()
+        conn.close()
+        flash("An account with this email already exists.", "danger")
+        return redirect(url_for("profile"))
+
     cursor.execute(
         "UPDATE users SET name=%s, email=%s WHERE id=%s",
         (name, email, current_user.id),
@@ -2029,6 +2097,13 @@ def admin_edit_user(user_id):
 
         if not name or not email:
             flash("Name and email are required.", "warning")
+            cursor.close()
+            conn.close()
+            return render_template("admin/edit_user.html", user=user)
+
+        # Validate email format
+        if not is_valid_email(email):
+            flash("Please enter a valid email address.", "danger")
             cursor.close()
             conn.close()
             return render_template("admin/edit_user.html", user=user)
