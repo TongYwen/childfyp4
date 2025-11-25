@@ -2,9 +2,6 @@
 {% block content %}
 <div class="d-flex align-items-center justify-content-center vh-100 bg-cover">
   <div class="auth-box">
-        <h3 class="text-center mb-3 fw-bold" style="color: #000000;">Create Your Account</h3>
-        <p class="text-center mb-3" style="color: #555;">Create your parent account to monitor your child's development</p>
-
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, msg in messages %}
