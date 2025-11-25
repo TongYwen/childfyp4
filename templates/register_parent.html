@@ -29,7 +29,7 @@
 
         <form method="POST" novalidate>
           <div class="mb-3">
-            <input type="text" class="form-control" name="name" placeholder="Enter your name" required>
+            <input type="text" class="form-control" name="name" placeholder="Enter your name" pattern="[A-Za-z\s]+" title="Name must contain only alphabet letters and spaces" required>
           </div>
 
           <div class="mb-3">

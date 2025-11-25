@@ -8,7 +8,7 @@
     <form method="POST" class="mt-3" style="max-width: 500px;">
         <div class="mb-3">
             <label class="form-label">Name</label>
-            <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+            <input type="text" name="name" class="form-control" value="{{ user.name }}" pattern="[A-Za-z\s]+" title="Name must contain only alphabet letters and spaces" required>
         </div>
 
         <div class="mb-3">

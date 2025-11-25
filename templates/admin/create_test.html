@@ -5,7 +5,7 @@
     <form method="POST" action="{{ url_for('admin_create_test') }}">
         <div class="mb-3">
             <label class="form-label">Test Name</label>
-            <input type="text" name="name" class="form-control" required>
+            <input type="text" name="name" class="form-control" pattern="[A-Za-z\s]+" title="Name must contain only alphabet letters and spaces" required>
         </div>
 
         <h6>Questions</h6>

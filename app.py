@@ -95,6 +95,18 @@ def is_strong_password(password: str) -> bool:
     return re.search(pattern, password) is not None
 
 
+def is_valid_name(name: str) -> bool:
+    """
+    Validate that a name contains only alphabet letters and spaces.
+    Returns True if valid, False otherwise.
+    """
+    if not name or not name.strip():
+        return False
+    # Allow only letters (any language) and spaces
+    pattern = r"^[A-Za-z\s]+$"
+    return re.match(pattern, name.strip()) is not None
+
+
 def normalize_role(role):
     if not role:
         return None
@@ -151,6 +163,11 @@ def register_parent():
         email = request.form["email"]
         password = request.form["password"]
 
+        # Validate name contains only alphabet letters
+        if not is_valid_name(name):
+            flash("Name must contain only alphabet letters and spaces.", "danger")
+            return redirect(url_for("register_parent"))
+
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
         conn = get_db_conn()
@@ -183,6 +200,11 @@ def register_admin():
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
+
+        # Validate name contains only alphabet letters
+        if not is_valid_name(name):
+            flash("Name must contain only alphabet letters and spaces.", "danger")
+            return redirect(url_for("register_admin"))
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
@@ -468,6 +490,17 @@ def children():
         gender = request.form["gender"]
         notes = request.form.get("notes", "")
 
+        # Validate name contains only alphabet letters
+        if not is_valid_name(name):
+            flash("Child name must contain only alphabet letters and spaces.", "danger")
+            cursor.execute(
+                "SELECT * FROM children WHERE parent_id=%s", (current_user.id,)
+            )
+            children_list = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            return render_template("select_child.html", children=children_list)
+
         cursor.execute(
             """
             INSERT INTO children
@@ -524,6 +557,11 @@ def edit_profile():
     name = request.form["name"].strip()
     email = request.form["email"].strip().lower()
 
+    # Validate name contains only alphabet letters
+    if not is_valid_name(name):
+        flash("Name must contain only alphabet letters and spaces.", "danger")
+        return redirect(url_for("profile"))
+
     conn = get_db_conn()
     cursor = conn.cursor()
     cursor.execute(
@@ -547,6 +585,11 @@ def add_child():
     grade_level = request.form["grade_level"]
     gender = request.form["gender"]
     notes = request.form.get("notes", "")
+
+    # Validate name contains only alphabet letters
+    if not is_valid_name(name):
+        flash("Child name must contain only alphabet letters and spaces.", "danger")
+        return redirect(url_for("profile"))
 
     conn = get_db_conn()
     cursor = conn.cursor()
@@ -592,6 +635,11 @@ def edit_child(child_id):
     grade_level = request.form["grade_level"]
     gender = request.form["gender"]
     notes = request.form.get("notes", "")
+
+    # Validate name contains only alphabet letters
+    if not is_valid_name(name):
+        flash("Child name must contain only alphabet letters and spaces.", "danger")
+        return redirect(url_for("profile"))
 
     conn = get_db_conn()
     cursor = conn.cursor()
@@ -2033,6 +2081,13 @@ def admin_edit_user(user_id):
             conn.close()
             return render_template("admin/edit_user.html", user=user)
 
+        # Validate name contains only alphabet letters
+        if not is_valid_name(name):
+            flash("Name must contain only alphabet letters and spaces.", "danger")
+            cursor.close()
+            conn.close()
+            return render_template("admin/edit_user.html", user=user)
+
         try:
             if password:
                 hashed = bcrypt.generate_password_hash(password).decode(
@@ -2146,6 +2201,11 @@ def admin_create_test():
         name = request.form.get("name")
         questions = request.form.getlist("questions[]")
 
+        # Validate name contains only alphabet letters
+        if not is_valid_name(name):
+            flash("Test name must contain only alphabet letters and spaces.", "danger")
+            return redirect(url_for("admin_create_test"))
+
         conn = get_db_conn()
         cursor = conn.cursor()
 
@@ -2192,6 +2252,13 @@ def admin_edit_test(test_id):
     if request.method == "POST":
         new_name = request.form.get("name")
         new_questions = request.form.getlist("questions[]")
+
+        # Validate name contains only alphabet letters
+        if not is_valid_name(new_name):
+            flash("Test name must contain only alphabet letters and spaces.", "danger")
+            cursor.close()
+            conn.close()
+            return redirect(url_for("admin_edit_test", test_id=test_id))
 
         cursor.execute(
             "UPDATE tests SET name=%s WHERE id=%s", (new_name, test_id)

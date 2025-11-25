@@ -96,7 +96,7 @@
                         <div class="row">
                           <div class="col-md-6 mb-3">
                             <label class="form-label">Name</label>
-                            <input type="text" name="name" value="{{ child.name }}" class="form-control" required>
+                            <input type="text" name="name" value="{{ child.name }}" class="form-control" pattern="[A-Za-z\s]+" title="Name must contain only alphabet letters and spaces" required>
                           </div>
                           <div class="col-md-6 mb-3">
                             <label class="form-label">DOB</label>
@@ -156,7 +156,7 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Name</label>
-            <input type="text" name="name" value="{{ user.name }}" class="form-control" required>
+            <input type="text" name="name" value="{{ user.name }}" class="form-control" pattern="[A-Za-z\s]+" title="Name must contain only alphabet letters and spaces" required>
           </div>
           <div class="mb-3">
             <label class="form-label">Email</label>
@@ -220,7 +220,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label class="form-label">Name</label>
-              <input type="text" name="name" class="form-control" required>
+              <input type="text" name="name" class="form-control" pattern="[A-Za-z\s]+" title="Name must contain only alphabet letters and spaces" required>
             </div>
             <div class="col-md-6 mb-3">
               <label class="form-label">DOB</label>

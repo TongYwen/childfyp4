@@ -5,7 +5,7 @@
     <form method="POST" action="{{ url_for('admin_edit_test', test_id=test.id) }}">
         <div class="mb-3">
             <label class="form-label">Test Name</label>
-            <input type="text" name="name" class="form-control" value="{{ test.name }}" required>
+            <input type="text" name="name" class="form-control" value="{{ test.name }}" pattern="[A-Za-z\s]+" title="Name must contain only alphabet letters and spaces" required>
         </div>
 
         <h6>Questions</h6>
