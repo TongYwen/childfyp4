@@ -151,10 +151,25 @@ def register_parent():
         email = request.form["email"]
         password = request.form["password"]
 
-        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        # Validate email format
+        if not EMAIL_REGEX.match(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("register_parent"))
 
+        # Check if email already exists
         conn = get_db_conn()
         cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            cursor.close()
+            conn.close()
+            flash("Email address already registered. Please use a different email or log in.", "danger")
+            return redirect(url_for("register_parent"))
+
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+
         cursor.execute(
             """
             INSERT INTO users (name, email, password, role)
@@ -184,10 +199,25 @@ def register_admin():
         email = request.form["email"]
         password = request.form["password"]
 
-        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        # Validate email format
+        if not EMAIL_REGEX.match(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("register_admin"))
 
+        # Check if email already exists
         conn = get_db_conn()
         cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            cursor.close()
+            conn.close()
+            flash("Email address already registered. Please use a different email or log in.", "danger")
+            return redirect(url_for("register_admin"))
+
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+
         cursor.execute(
             """
             INSERT INTO users (name, email, password, role)
